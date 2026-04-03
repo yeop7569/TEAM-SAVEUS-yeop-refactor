@@ -1,7 +1,3 @@
-export default function page() {
-  return (
-    <>
-      <h1>page</h1>
-    </>
-  );
-}
+import UIMainPage from "./ui_main/page";
+
+export default UIMainPage;
