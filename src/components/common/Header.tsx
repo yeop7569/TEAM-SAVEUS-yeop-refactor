@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Bug from "/src/assets/Bug.svg";
+import Bug from "@/assets/Bug.svg";
 import { Aldrich } from "next/font/google";
 
 const aldrich = Aldrich({

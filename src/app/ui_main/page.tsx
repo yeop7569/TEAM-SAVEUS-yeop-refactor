@@ -1,11 +1,11 @@
 import Image from "next/image";
 
-import Direction from "/src/assets/landing/Direction.svg";
-import floating_top from "/src/assets/landing/floating_top.svg";
-import Bug from "/src/assets/Bug.svg";
-import Square from "/src/assets/landing/Square.svg";
-import Rhombus from "/src/assets/landing/Rhombus.svg";
-import Inspection_example from "/src/assets/landing/Inspection_example.svg";
+import Direction from "@/assets/landing/Direction.svg";
+import floating_top from "@/assets/landing/floating_top.svg";
+import Bug from "@/assets/Bug.svg";
+import Square from "@/assets/landing/Square.svg";
+import Rhombus from "@/assets/landing/Rhombus.svg";
+import Inspection_example from "@/assets/landing/Inspection_example.svg";
 import Swiping from "@/components/landing/Swiping";
 import Footer from "@/components/common/Footer";
 import MainBg from "@/components/common/MainBg";

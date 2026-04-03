@@ -1,5 +1,5 @@
-import logo from "/src/assets/logo.svg";
-import right from "/src/assets/Right.svg";
+import logo from "@/assets/logo.svg";
+import right from "@/assets/Right.svg";
 import Image from "next/image";
 
 export default function RepoInResult() {
