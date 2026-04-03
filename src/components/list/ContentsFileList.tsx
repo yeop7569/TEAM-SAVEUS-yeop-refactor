@@ -3,11 +3,11 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import dirimg from "/src/assets/filelist/dir.svg";
-import fileimg from "/src/assets/filelist/file.svg";
-import titleimg from "/src/assets/filelist/title.svg";
-import Checker from "/src/assets/filelist/Checker.svg";
-import CheckedCircle from "/src/assets/filelist/CheckedCircle.svg";
+import dirimg from "@/assets/filelist/dir.svg";
+import fileimg from "@/assets/filelist/file.svg";
+import titleimg from "@/assets/filelist/title.svg";
+import Checker from "@/assets/filelist/Checker.svg";
+import CheckedCircle from "@/assets/filelist/CheckedCircle.svg";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import useAnalysisStore from "@/app/store/analysisStore";
 import { existAnalyzedCode } from "@/firebase/data_getting";

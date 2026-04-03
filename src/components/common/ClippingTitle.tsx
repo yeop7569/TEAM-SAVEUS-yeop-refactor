@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Vector from "/src/assets/vector.svg";
+import Vector from "@/assets/Vector.svg";
 
 export default function ClippingTitle() {
   return (
