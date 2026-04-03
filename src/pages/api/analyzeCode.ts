@@ -11,29 +11,31 @@ export default async function handler(
 
   const { code } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
+  const userToken = req.cookies.user_token;
+
+  if (!userToken) {
+    return res.status(401).json({ error: "Unauthorized. 로그인이 필요합니다." });
+  }
 
   if (!apiKey) {
     return res.status(500).json({ error: "GEMINI_API_KEY is missing from environment" });
   }
 
-  console.log("Analyzing Code Sample (Auto Detection):", code ? code.substring(0, 50) + "..." : "EMPTY");
 
   try {
     const ai = new GoogleGenAI({ apiKey });
     const model = "gemini-2.5-flash";
 
-    const prompt = `You are a strict Security Auditor. 
-Analyze the code for critical vulnerabilities (OWASP, CWE).
-Respond in KOREAN. 
-Sections:
-1. 주요 취약점:
-2. 수정 제안:
-3. 수정된 코드:
+    const prompt = `분석할 코드:\n\n${code}`;
 
-Analyze this:
-\n\n${code}`;
-
-    const result = await ai.models.generateContent({ model, contents: prompt });
+    const result = await ai.models.generateContent({ 
+      model, 
+      contents: prompt,
+      config: {
+        systemInstruction: "You are a strict Security Auditor. Analyzes code for critical vulnerabilities (OWASP, CWE). Respond in KOREAN. Explanation should be concise, but you MUST provide the full '3. 수정된 코드:' (Modified Code) block unconditionally.",
+        temperature: 0.3,
+      }
+    });
     const responseText = result.text;
 
     if (!responseText) {

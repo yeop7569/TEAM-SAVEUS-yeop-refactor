@@ -69,18 +69,14 @@ const ContentsFileList: React.FC<FileListProps> = ({ files, username }) => {
       setIsAnalyzed(results); // 상태 업데이트
     };
 
-    fetchAnalyzedStatus(); // useEffect 내에서 비동기 함수 호출
-  }, [files, path]); // 종속성 배열: 파일 목록이나 repo 관련 정보가 변경되면 다시 실행
+    fetchAnalyzedStatus();
+  }, [files, path, reponame, username]);
 
   useEffect(() => {
     if (reponame && username) {
       setState(username, reponame, selectedFile);
     }
-  }, [reponame, username, setState]);
-
-  useEffect(() => {
-    if (reponame) setState(username, reponame, selectedFile);
-  }, [selectedFile]);
+  }, [reponame, username, setState, selectedFile]);
 
   const handleFileClick = async (file: FileObject, existFile: boolean) => {
     if (existFile) {

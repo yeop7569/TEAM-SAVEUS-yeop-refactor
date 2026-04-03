@@ -1,6 +1,0 @@
-FAILED: gemini-2.0-flash | status=429 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
-FAILED: gemini-2.0-flash-lite | status=429 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
-FAILED: gemini-1.5-flash | status=404 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
-FAILED: gemini-1.5-flash-latest | status=404 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
-FAILED: gemini-1.5-flash-8b | status=404 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod
-FAILED: gemini-1.5-pro | status=404 | [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/mod

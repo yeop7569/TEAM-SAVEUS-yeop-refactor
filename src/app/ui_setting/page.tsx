@@ -21,11 +21,11 @@ export default function page() {
                 <h1>marry@gmail.com</h1>
               </section>
             </section>
-            <button className="px-2 py-1 mt-2 rounded-lg border-[2px] border-[#6100FF] cursor-pointer flex items-center">
+            <a href="/api/logout" className="px-2 py-1 mt-2 rounded-lg border-[2px] border-[#6100FF] cursor-pointer flex items-center">
               <span className="font-inter text-[16px] text-[#6100ff] leading-[29px] tracking-[-0.01em] flex items-center justify-between">
                 로그아웃
               </span>
-            </button>
+            </a>
           </section>
           <hr className="w-full h-[1px] bg-[#bababa] border-0" />
           <section className="w-full flex items-start justify-start gap-[4vw] text-[16px] tracking-[-0.01em]">

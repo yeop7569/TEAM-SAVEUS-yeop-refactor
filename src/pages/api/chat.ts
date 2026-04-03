@@ -8,6 +8,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { message } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
+  const userToken = req.cookies.user_token;
+
+  if (!userToken) {
+    return res.status(401).json({ response: "Unauthorized. 로그인이 필요합니다." });
+  }
 
   // 메시지 길이 제한: 100자로 확장
   const MAX_MESSAGE_LENGTH = 100;

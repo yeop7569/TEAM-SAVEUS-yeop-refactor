@@ -1,6 +1,17 @@
 import Header from "@/components/common/Header";
 import MainBg from "@/components/common/MainBg";
-export default function page() {
+import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function page() {
+  const cookieStore = cookies();
+  const token = cookieStore.get("user_token");
+
+  if (token?.value) {
+    redirect("/storage");
+  }
+
   return (
     <>
       <Header />
@@ -18,11 +29,13 @@ export default function page() {
           </p>
         </div>
         <div className="relative">
-          <button className=" h-[56px] top-5 left-[57px] p-4 rounded-full bg-[#6100FF] cursor-pointer flex items-center justify-center gap-2.5">
-            <span className=" h-[29px] font-inter text-[24px] font-light leading-[29px] tracking-[-0.01em] text-white">
-              Login
-            </span>
-          </button>
+          <Link href="/ui_login">
+            <button className=" h-[56px] top-5 left-[57px] p-4 rounded-full bg-[#6100FF] cursor-pointer flex items-center justify-center gap-2.5">
+              <span className=" h-[29px] font-inter text-[24px] font-light leading-[29px] tracking-[-0.01em] text-white">
+                Login
+              </span>
+            </button>
+          </Link>
         </div>
       </article>
     </>

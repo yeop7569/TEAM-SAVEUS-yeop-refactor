@@ -35,7 +35,7 @@ export default function Header() {
           </p>
         </Link>
         <Link
-          href="/취약점DB"
+          href="/vulnerabilityDB"
           className="flex flex-col ml-[100px] text-[18px] font-medium leading-[22px] text-left"
         >
           취약점 DB
@@ -43,7 +43,7 @@ export default function Header() {
       </nav>
       <nav>
         <Link
-          href="/MY저장소"
+          href="/ui_my_repo_not_login"
           className="pr-20 text-[18px] font-medium leading-[22px] text-left"
         >
           MY 저장소

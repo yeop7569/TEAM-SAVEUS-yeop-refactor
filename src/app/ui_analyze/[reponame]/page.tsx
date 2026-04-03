@@ -81,7 +81,6 @@ export default async function Page({
     searchParams.filename
   );
 
-  // console.log(analyzedCode, "at ui_analyze");
   return (
     <>
       <Header />

@@ -1,9 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function Page() {
+function LoginHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const search = searchParams ? searchParams.get("code") : null;
@@ -46,5 +46,13 @@ export default function Page() {
         <p className="text-xl font-medium tracking-tighter">로그인 중입니다...</p>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center text-[#6100ff]">Loading...</div>}>
+      <LoginHandler />
+    </Suspense>
   );
 }

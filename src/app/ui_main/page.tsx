@@ -6,13 +6,15 @@ import Bug from "/src/assets/Bug.svg";
 import Square from "/src/assets/landing/Square.svg";
 import Rhombus from "/src/assets/landing/Rhombus.svg";
 import Inspection_example from "/src/assets/landing/Inspection_example.svg";
-
 import Swiping from "@/components/landing/Swiping";
 import Footer from "@/components/common/Footer";
 import MainBg from "@/components/common/MainBg";
 import Header from "@/components/common/Header";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import dynamic from "next/dynamic";
+
+const DynamicSwiping = dynamic(() => import("@/components/landing/Swiping"), { ssr: false });
 
 export default async function UIMainPage() {
   let hasToken = false;
@@ -122,7 +124,7 @@ export default async function UIMainPage() {
         </section>
       </article>
       {/* Landing 3 (Swiper) */}
-      <Swiping />
+      <DynamicSwiping />
       {/* Contact */}
       <article className="flex absolute top-[400vh] w-full h-[100vh] justify-between items-center px-[6vw] py-[10vh]">
         <section className="flex flex-col h-full justify-between">
