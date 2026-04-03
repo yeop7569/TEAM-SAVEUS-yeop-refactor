@@ -1,5 +1,5 @@
 import Image from "next/image";
-import FileImg from "/src/assets/FileImg.svg";
+import FileImg from "@/assets/FileImg.svg";
 import { useState } from "react";
 import { useModalState } from "@/app/store/analysisStore";
 export default function FileListModal({

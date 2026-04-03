@@ -4,12 +4,12 @@ import { Autoplay, FreeMode } from "swiper/modules";
 import "swiper/css";
 import { useEffect } from "react";
 import Image from "next/image";
-import Locker from "/src/assets/landing/swiper/Locker.png";
-import Gear from "/src/assets/landing/swiper/Gear.png";
-import Locker2 from "/src/assets/landing/swiper/Locker2.png";
-import Hand from "/src/assets/landing/swiper/Hand.png";
-import Circular from "/src/assets/landing/swiper/Circular.png";
-import Check from "/src/assets/landing/swiper/Check.png";
+import Locker from "@/assets/landing/swiper/Locker.png";
+import Gear from "@/assets/landing/swiper/Gear.png";
+import Locker2 from "@/assets/landing/swiper/Locker2.png";
+import Hand from "@/assets/landing/swiper/Hand.png";
+import Circular from "@/assets/landing/swiper/Circular.png";
+import Check from "@/assets/landing/swiper/Check.png";
 
 export default function Swiping() {
   useEffect(() => {
