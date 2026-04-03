@@ -1,34 +1,58 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function Page() {
+function LoginHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const search = searchParams.get("code");
+  const search = searchParams ? searchParams.get("code") : null;
 
   useEffect(() => {
     if (search) {
-      const params = {
-        client_id: "Ov23liuvo3Bv9YQQXe1m",
-        client_secret: `${process.env.NEXT_PUBLIC_Client_secrets}`,
-        code: `${search}`,
-      };
-      console.log(`${process.env.NEXT_PUBLIC_Client_secrets}`);
-      console.log(params);
-      fetch(`http://localhost:3000/api/request_token`, {
+      fetch(`/api/request_token`, {
         method: "POST",
-        body: JSON.stringify(params),
+        body: JSON.stringify({ code: search }),
         headers: {
           "Content-Type": "application/json",
           accept: "application/json",
         },
-      }).then(() => {
-        router.push("/ui_main"); // fetch 요청 후에 실행되도록 보장
-      });
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to request token");
+          return res.json();
+        })
+        .then((data) => {
+          if (data.message === "token allocated") {
+            router.push("/");
+          } else {
+            console.error("Login failed:", data.message);
+            alert("로그인에 실패했습니다. 다시 시도해 주세요.");
+            router.push("/ui_login");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("네트워크 오류가 발생했습니다.");
+          router.push("/ui_login");
+        });
     }
-  }, [search]);
+  }, [search, router]);
 
-  return null;
+  return (
+    <div className="flex h-screen w-full items-center justify-center text-[#6100ff] bg-white">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6100ff]"></div>
+        <p className="text-xl font-medium tracking-tighter">로그인 중입니다...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center text-[#6100ff]">Loading...</div>}>
+      <LoginHandler />
+    </Suspense>
+  );
 }

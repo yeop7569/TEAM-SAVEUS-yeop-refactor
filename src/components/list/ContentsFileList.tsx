@@ -69,13 +69,14 @@ const ContentsFileList: React.FC<FileListProps> = ({ files, username }) => {
       setIsAnalyzed(results); // 상태 업데이트
     };
 
-    fetchAnalyzedStatus(); // useEffect 내에서 비동기 함수 호출
-  }, [files, path]); // 종속성 배열: 파일 목록이나 repo 관련 정보가 변경되면 다시 실행
+    fetchAnalyzedStatus();
+  }, [files, path, reponame, username]);
 
   useEffect(() => {
-    if (reponame) setState(username, reponame, selectedFile);
-    console.log(selectedFile);
-  }, [selectedFile]);
+    if (reponame && username) {
+      setState(username, reponame, selectedFile);
+    }
+  }, [reponame, username, setState, selectedFile]);
 
   const handleFileClick = async (file: FileObject, existFile: boolean) => {
     if (existFile) {
@@ -92,12 +93,13 @@ const ContentsFileList: React.FC<FileListProps> = ({ files, username }) => {
     }
 
     route.push(
-      `http://localhost:3000/ui_analyze/${reponame}?path=${path}&filename=${file.name}&download_url=${file.download_url}`
+      `/ui_analyze/${reponame}?path=${path}&filename=${file.name}&download_url=${file.download_url}`,
+      { scroll: false }
     );
   };
 
   const handleDoubleClick = (path: string) => {
-    route.push(`http://localhost:3000/ui_analyze/${reponame}?path=${path}`);
+    route.push(`/ui_analyze/${reponame}?path=${path}`, { scroll: false });
   };
 
   const handleGoBackClick = async () => {
@@ -117,9 +119,10 @@ const ContentsFileList: React.FC<FileListProps> = ({ files, username }) => {
       newPath = ""; // newPath를 빈 문자열로 설정
     }
 
-    // 경로 변경 후 route.push 비동기 실행
-    await route.push(
-      `http://localhost:3000/ui_analyze/${reponame}?path=${newPath}`
+    // 경로 변경 시 스크롤 고정
+    route.push(
+      `/ui_analyze/${reponame}?path=${newPath}`,
+      { scroll: false }
     );
   };
   return (

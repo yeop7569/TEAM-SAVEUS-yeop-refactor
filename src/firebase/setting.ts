@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
 const firebaseConfig = {
-  apiKey: `${process.env.FIRESTORE_API_KEY}`,
+  apiKey: process.env.NEXT_PUBLIC_FIRESTORE_API_KEY,
   authDomain: "saveus-9a83f.firebaseapp.com",
   databaseURL:
     "https://saveus-9a83f-default-rtdb.asia-southeast1.firebasedatabase.app",

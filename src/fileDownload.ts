@@ -5,7 +5,7 @@ export async function getFile(download_url?: string) {
 
       return await fileCodes.text();
     } catch (e) {
-      console.log(e);
+      console.error("File Fetch Error:", e);
       return null;
     }
   }

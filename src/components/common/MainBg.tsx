@@ -5,7 +5,7 @@ export default function MainBg() {
   return (
     <>
       <div className="absolute z-[-1]">
-        <Image src={Mainbg} alt="Mainbg" />
+        <Image src={Mainbg} alt="Mainbg" priority />
       </div>
     </>
   );

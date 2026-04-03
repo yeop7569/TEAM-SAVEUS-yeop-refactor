@@ -12,6 +12,7 @@ import CodeAnalyzer from "@/components/common/CodeAnalyzer";
 import AnalysisResults from "@/components/common/AnalyzeResult";
 import { getAnalyzedCode } from "@/firebase/data_getting";
 import CodeInspect from "@/components/inspection/CodeInspect";
+import { getFile } from "@/fileDownload";
 
 async function getUserName() {
   const cookiestore = cookies();
@@ -50,21 +51,7 @@ async function getFileList(reponame: string, path: string | undefined) {
       path: newPath,
     }
   );
-  return repoContents.data;
-}
-
-export async function getFile(download_url?: string) {
-  if (download_url) {
-    try {
-      const fileCodes = await fetch(download_url);
-
-      return await fileCodes.text();
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-  return null;
+  return repoContents.data as any;
 }
 async function getCodeFromFirebase(
   reponame: string,
@@ -94,44 +81,47 @@ export default async function Page({
     searchParams.filename
   );
 
-  // console.log(analyzedCode, "at ui_analyze");
   return (
     <>
       <Header />
-      <div className="flex flex-col justify-center items-center">
-        <div className="ml-[70px] w-[1760px] h-[1439px] top-[148px] left-[80px] gap-[45px]">
-          <DetectedTitle widthClass="w-[1740px]" text="sfacweb - 1 " />
+      <div className="flex flex-col items-center min-h-screen bg-[#FDFDFF]">
+        <div className="w-full max-w-[1760px] flex flex-col gap-[45px] py-10">
+          <DetectedTitle 
+            widthClass="w-full max-w-[1740px]" 
+            text={`${params.reponame}${searchParams.filename ? ` / ${searchParams.filename}` : ""}`} 
+          />
 
           <div className="flex ml-[13px] mt-[45px] gap-[32px]">
             <div className="flex flex-col gap-[32px]">
-              <div className="w-[247px] h-[107px] rounded-lg p-4 bg-[#6100FF] flex justify-center items-center">
-                <span className="w-[170px] h-[29px] font-inter font-semibold text-[24px] text-white">
+              <button className="w-[247px] h-[70px] rounded-xl p-4 bg-[#6100FF] hover:bg-[#4E00CC] transition-colors flex justify-center items-center shadow-md active:scale-95 duration-200">
+                <span className="font-inter font-semibold text-[20px] text-white">
                   폴더 전체 검사
                 </span>
-              </div>
+              </button>
               <ContentsFileList
                 files={await getFileList(params.reponame, searchParams.path)}
                 username={await getUserName()}
               />
             </div>
-            <div className="w-[1453px] h-[973px] border-[1px] rounded-lg p-[40px] gap-[32px] border-[#C3C3C3] flex flex-col justify-center items-center">
+            <div className="w-full max-w-[1453px] min-h-[800px] border border-gray-200 rounded-2xl p-8 gap-8 flex flex-col justify-start items-stretch bg-white shadow-sm overflow-hidden">
               {fileCodes ? (
-                <pre className="w-full h-full overflow-auto whitespace-pre-wrap text-left">
-                  {fileCodes}
-                </pre>
+                <div className="bg-[#FBFCFF] border border-gray-100 rounded-xl p-6 overflow-auto flex-1">
+                  <pre className="font-mono text-sm leading-relaxed text-[#1A1A1A] whitespace-pre tabular-nums">
+                    {fileCodes}
+                  </pre>
+                </div>
               ) : (
-                <>
+                <div className="flex-1 flex flex-col items-center justify-center gap-4 opacity-60">
                   <Image
                     src={Choice}
                     alt="파일선택"
-                    width={48}
-                    height={48}
-                    className="mb-[5px]"
+                    width={64}
+                    height={64}
                   />
-                  <span className="text-[#6100FF] font-inter text-[32px] font-medium leading-[38.73px] tracking-[-0.01em] text-center">
-                    파일을 선택하세요
+                  <span className="text-[#6100FF] font-inter text-[28px] font-medium tracking-tight">
+                    분석할 파일을 선택하세요
                   </span>
-                </>
+                </div>
               )}
 
               <AnalysisResults
@@ -140,7 +130,16 @@ export default async function Page({
             </div>
           </div>
 
-          <div>{fileCodes && !analyzedCode && <CodeAnalyzer />}</div>
+          <div>
+            {fileCodes && (
+              <CodeAnalyzer
+                code={fileCodes}
+                isReanalysis={!!analyzedCode}
+                path={searchParams.path}
+                filename={searchParams.filename}
+              />
+            )}
+          </div>
         </div>
       </div>
 

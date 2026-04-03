@@ -1,6 +1,3 @@
-import Footer from "@/components/common/Footer";
-import Header from "@/components/common/Header";
+import UIMainPage from "./ui_main/page";
 
-export default async function page() {
-  return <></>;
-}
+export default UIMainPage;

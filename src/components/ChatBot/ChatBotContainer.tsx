@@ -19,10 +19,10 @@ const ChatBotContainer = () => {
   };
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+    <div style={{ position: "relative", width: "100vw", height: "100vh", pointerEvents: "none" }}>
       {/* Draggable로 버튼을 감싸면 드래그 가능 */}
       <Draggable onStop={handleDragStop}>
-        <button onClick={toggleChatBot} className="p-0 border-none bg-transparent focus:outline-none">
+        <button onClick={toggleChatBot} className="p-0 border-none bg-transparent focus:outline-none" style={{ pointerEvents: "auto" }}>
           <svg width="77" height="77" viewBox="0 0 77 77" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g filter="url(#filter0_b_3239_7434)">
               <rect x="0.9375" y="0.456543" width="76" height="76" rx="38" fill="white" fillOpacity="0.1" />
@@ -67,6 +67,7 @@ const ChatBotContainer = () => {
             position: "absolute",
             top: buttonPosition.y + 90,
             left: buttonPosition.x,
+            pointerEvents: "auto",
           }}
         >
           <ChatBot />

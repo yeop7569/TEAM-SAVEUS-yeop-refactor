@@ -7,7 +7,10 @@ interface AnalysisState {
   reponame: string;
   filelist: { path: string; name: string; download_url: string }[];
   analysisResult: string[];
+  isAnalyzing: boolean;
   setAnalysisResult: (result: string) => void;
+  setIsAnalyzing: (isLoading: boolean) => void;
+  clearAnalysisResult: () => void;
   setFileInfo: (
     username: string,
     reponame: string,
@@ -18,6 +21,7 @@ interface AnalysisState {
 
 const useAnalysisStore = create<AnalysisState>((set, get) => ({
   analysisResult: [],
+  isAnalyzing: false,
   username: "",
   reponame: "",
   filelist: [],
@@ -25,6 +29,8 @@ const useAnalysisStore = create<AnalysisState>((set, get) => ({
     const results = get().analysisResult;
     set({ analysisResult: [...results, result] });
   },
+  setIsAnalyzing: (isLoading: boolean) => set({ isAnalyzing: isLoading }),
+  clearAnalysisResult: () => set({ analysisResult: [] }),
   setFileInfo: (
     username: string,
     reponame: string,
@@ -36,8 +42,8 @@ const useAnalysisStore = create<AnalysisState>((set, get) => ({
       filelist: filelist,
     }),
   postResultFile: async () => {
+    /*
     const { username, reponame, filelist, analysisResult } = get(); // 현재 상태를 가져옴
-    // console.log(username, reponame, filelist, analysisResult);
     // 분석된 파일들 파이어스토어에 일괄저장
     await Promise.all(
       filelist.map(
@@ -51,6 +57,7 @@ const useAnalysisStore = create<AnalysisState>((set, get) => ({
           )
       )
     );
+    */
     // 상태 값을 활용하여 로직 실행
     set({ analysisResult: [] });
   },

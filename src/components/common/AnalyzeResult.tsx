@@ -3,37 +3,82 @@ import React, { useEffect, useState } from "react";
 import useAnalysisStore from "@/app/store/analysisStore";
 
 const AnalysisResults: React.FC<{ codes: string | null }> = ({ codes }) => {
-  const [analysisResult, setAnalysisResult] = useState("");
+  // Removed local useState for analysisResult as it will now be managed by the store or derived.
   const analysisFromStore = useAnalysisStore((state) => state.analysisResult);
+  const setAnalysisResultInStore = useAnalysisStore((state) => state.setAnalysisResult);
+
   useEffect(() => {
-    if (codes) setAnalysisResult(codes);
-    // else setAnalysisResult(analysisFromStore);
-  }, [codes]);
+    // If initial codes are provided (e.g., from server-side props), set them in the store.
+    // This ensures the store is initialized with the correct data.
+    if (codes) {
+      setAnalysisResultInStore(codes);
+    }
+  }, [codes, setAnalysisResultInStore]);
+
+  // Determine the result to display: prioritize the latest result in the store
+  const latestResultFromStore = analysisFromStore.length > 0
+    ? analysisFromStore[analysisFromStore.length - 1]
+    : null;
+
+  const isAnalyzing = useAnalysisStore((state) => state.isAnalyzing);
+  const displayResult = latestResultFromStore || codes || "";
 
   const parseResult = (result: string) => {
     if (!result) return { vulnerabilities: "", fixes: "", exampleCode: "" };
-    console.log(result);
-    const lines = result
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
 
-    const vulnerabilities =
-      lines.find((line) => line.startsWith("1. "))?.replace(/^1\. /, "") ||
-      "취약점 정보가 없습니다.";
-    const fixes =
-      lines.find((line) => line.startsWith("2. "))?.replace(/^2\. /, "") ||
-      "수정 방안 정보가 없습니다.";
-    const exampleCode =
-      lines
-        .slice(lines.findIndex((line) => line.startsWith("3. ")) + 1)
-        .join("\n") || "수정된 코드 정보가 없습니다.";
+    // 섹션을 찾는 더 강력한 로직: 마크다운 기호 등을 모두 정규식으로 지우고 섹션별로 분리
+    const cleanResult = result.replace(/#{1,6}\s*/g, ""); // ### 등 헤더 기호 제거
+    
+    const getSection = (num: number, nextNum?: number) => {
+      const startRegex = new RegExp(`${num}\\.\\s*`, "g");
+      const startIndex = cleanResult.search(startRegex);
+      if (startIndex === -1) return null;
+      
+      const contentStart = cleanResult.indexOf(".", startIndex) + 1;
+      let contentEnd = cleanResult.length;
+      
+      if (nextNum) {
+        const nextRegex = new RegExp(`\\n${nextNum}\\.\\s*`, "g");
+        const nextIndex = cleanResult.search(nextRegex);
+        if (nextIndex !== -1) contentEnd = nextIndex;
+      }
+      
+      return cleanResult.substring(contentStart, contentEnd).trim();
+    };
 
-    return { vulnerabilities, fixes, exampleCode };
+    const vulnerabilities = getSection(1, 2) || "취약점 정보를 파싱하지 못했습니다.";
+    const fixes = getSection(2, 3) || "수정 방안을 파싱하지 못했습니다.";
+    const exampleCode = getSection(3) || "수정 코드를 파싱하지 못했습니다.";
+
+    // 만약 모든 섹션 파싱에 실패했다면(특수 형식 등), 원문 그대로를 보여주기 위한 플래그
+    const isParsingFailed = !getSection(1) && !getSection(2) && !getSection(3);
+
+    return { vulnerabilities, fixes, exampleCode, isParsingFailed };
   };
 
-  const { vulnerabilities, fixes, exampleCode } = parseResult(analysisResult);
-  if (!analysisResult) return null;
+  if (isAnalyzing) {
+    return (
+      <div className="analysis-results bg-[#FFF3F3] p-10 rounded-xl w-full border-[1px] border-[#FFDADA] shadow-sm flex flex-col items-center justify-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6D6D]"></div>
+        <p className="text-[#FF6D6D] font-semibold text-lg">새로운 보안 분석을 진행 중입니다...</p>
+      </div>
+    );
+  }
+
+  const { vulnerabilities, fixes, exampleCode, isParsingFailed } = parseResult(displayResult);
+  if (!displayResult) return null;
+
+  // 파싱 실패 시 원문 출력
+  if (isParsingFailed) {
+    return (
+      <div className="analysis-results bg-[#FFF3F3] p-6 rounded-xl w-full border-[1px] border-[#FFDADA] overflow-auto">
+        <h2 className="text-[24px] font-semibold text-[#FF6D6D] mb-4">분석 전체 결과 (원문)</h2>
+        <div className="text-[#3f3f3f] font-medium whitespace-pre-wrap leading-relaxed">
+          {displayResult}
+        </div>
+      </div>
+    );
+  }
 
   const copyToClipboard = async () => {
     try {
@@ -45,7 +90,7 @@ const AnalysisResults: React.FC<{ codes: string | null }> = ({ codes }) => {
   };
 
   return (
-    <div className="analysis-results bg-[#FFF3F3] p-4 rounded-lg  overflow-auto">
+    <div className="analysis-results bg-[#FFF3F3] p-6 rounded-xl w-full border-[1px] border-[#FFDADA] shadow-sm overflow-auto max-h-[600px]">
       <div className="mb-4">
         <h2 className="text-[24px] font-semibold text-[#FF6D6D]">
           1. 주요 취약점

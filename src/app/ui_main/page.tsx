@@ -1,4 +1,3 @@
-"use server";
 import Image from "next/image";
 
 import Direction from "/src/assets/landing/Direction.svg";
@@ -7,14 +6,17 @@ import Bug from "/src/assets/Bug.svg";
 import Square from "/src/assets/landing/Square.svg";
 import Rhombus from "/src/assets/landing/Rhombus.svg";
 import Inspection_example from "/src/assets/landing/Inspection_example.svg";
-
 import Swiping from "@/components/landing/Swiping";
 import Footer from "@/components/common/Footer";
 import MainBg from "@/components/common/MainBg";
 import Header from "@/components/common/Header";
 import Link from "next/link";
 import { cookies } from "next/headers";
-export default async function page() {
+import dynamic from "next/dynamic";
+
+const DynamicSwiping = dynamic(() => import("@/components/landing/Swiping"), { ssr: false });
+
+export default async function UIMainPage() {
   let hasToken = false;
   const cookiestore = cookies();
   const token = cookiestore.get("user_token");
@@ -48,11 +50,11 @@ export default async function page() {
           <button className=" h-[56px] top-5 left-[57px] p-4 rounded-full bg-[#6100FF] cursor-pointer flex items-center justify-center gap-2.5">
             <span className=" h-[29px] font-inter text-[24px] font-light leading-[29px] tracking-[-0.01em] text-white">
               {hasToken ? (
-                <Link href="http://localhost:3000/storage">
+                <Link href="/storage">
                   파일 분석하러가기
                 </Link>
               ) : (
-                <Link href="http://localhost:3000/ui_login">Login</Link>
+                <Link href="/ui_login">Login</Link>
               )}
             </span>
           </button>
@@ -122,7 +124,7 @@ export default async function page() {
         </section>
       </article>
       {/* Landing 3 (Swiper) */}
-      <Swiping />
+      <DynamicSwiping />
       {/* Contact */}
       <article className="flex absolute top-[400vh] w-full h-[100vh] justify-between items-center px-[6vw] py-[10vh]">
         <section className="flex flex-col h-full justify-between">
