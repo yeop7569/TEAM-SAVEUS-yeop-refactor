@@ -2,7 +2,19 @@ import Header from "@/components/common/Header";
 import MainBg from "@/components/common/MainBg";
 import Link from "next/link";
 
-export default function page() {
+import { redirect } from "next/navigation";
+
+export default function page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // 만약 URL에 code가 있다면 (깃허브 인증 후 돌아온 경우) 처리 페이지로 이동
+  const code = searchParams.code;
+  if (code) {
+    redirect(`/login_loading?code=${code}`);
+  }
+
   return (
     <>
       <Header />
@@ -19,7 +31,7 @@ export default function page() {
         <div className="relative">
           <button className=" h-[56px] top-5 left-[57px] p-4 rounded-full bg-[#6100FF] cursor-pointer flex items-center justify-center gap-2.5">
             <span className=" h-[29px] font-inter text-[24px] font-light leading-[29px] tracking-[-0.01em] text-white">
-              <Link href="https://github.com/login/oauth/authorize?client_id=Ov23liuvo3Bv9YQQXe1m">
+              <Link href={`https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}>
                 Github로 연동 로그인하기
               </Link>
             </span>

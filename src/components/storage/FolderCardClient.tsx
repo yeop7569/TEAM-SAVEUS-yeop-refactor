@@ -32,7 +32,8 @@ const FolderCardClient: FC<FolderCardProps> = ({
     checkFileStatus();
   }, [name, username, updateStatus]);
 
-  const truncatedName = name.length > 20 ? `${name.slice(0, 20)}...` : name;
+  // JS 기반의 강제 절삭은 제거하고 CSS truncate로 유연하게 처리합니다.
+  const displayName = name;
 
   return (
     <div className="w-[310px] h-[200px] shrink-0 flex flex-col items-start justify-between p-[20px] bg-[#fff] border-[1px] border-solid border-[#e0ceff] rounded-[12px]">
@@ -46,13 +47,13 @@ const FolderCardClient: FC<FolderCardProps> = ({
               height={38}
               className="shrink-0"
             />
-            <div className="text-[28px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] whitespace-nowrap mt-[8px]">
-              {truncatedName}
+            <div className="text-[28px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] mt-[8px] truncate w-full" title={displayName}>
+              {displayName}
             </div>
           </>
         ) : (
-          <div className="text-[28px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] whitespace-nowrap">
-            {truncatedName}
+          <div className="text-[28px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] truncate w-full" title={displayName}>
+            {displayName}
           </div>
         )}
       </div>
@@ -61,7 +62,7 @@ const FolderCardClient: FC<FolderCardProps> = ({
           <Link href={`/ui_analyze/${name}`}>
             {fileExists ? <RepoInResult /> : <RepoInspect />}
           </Link>
-          <div className="text-[16px] leading-[16px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] whitespace-nowrap">
+          <div className="text-[16px] leading-[16px] tracking-[-0.01em] font-['Inter'] text-[#3f3f3f] truncate max-w-[150px]" title={subtitle}>
             {subtitle}
           </div>
         </div>

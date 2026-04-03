@@ -7,7 +7,10 @@ interface AnalysisState {
   reponame: string;
   filelist: { path: string; name: string; download_url: string }[];
   analysisResult: string[];
+  isAnalyzing: boolean;
   setAnalysisResult: (result: string) => void;
+  setIsAnalyzing: (isLoading: boolean) => void;
+  clearAnalysisResult: () => void;
   setFileInfo: (
     username: string,
     reponame: string,
@@ -18,6 +21,7 @@ interface AnalysisState {
 
 const useAnalysisStore = create<AnalysisState>((set, get) => ({
   analysisResult: [],
+  isAnalyzing: false,
   username: "",
   reponame: "",
   filelist: [],
@@ -25,6 +29,8 @@ const useAnalysisStore = create<AnalysisState>((set, get) => ({
     const results = get().analysisResult;
     set({ analysisResult: [...results, result] });
   },
+  setIsAnalyzing: (isLoading: boolean) => set({ isAnalyzing: isLoading }),
+  clearAnalysisResult: () => set({ analysisResult: [] }),
   setFileInfo: (
     username: string,
     reponame: string,

@@ -1,4 +1,3 @@
-"use server";
 import Image from "next/image";
 
 import Direction from "/src/assets/landing/Direction.svg";
@@ -14,7 +13,8 @@ import MainBg from "@/components/common/MainBg";
 import Header from "@/components/common/Header";
 import Link from "next/link";
 import { cookies } from "next/headers";
-export default async function page() {
+
+export default async function UIMainPage() {
   let hasToken = false;
   const cookiestore = cookies();
   const token = cookiestore.get("user_token");
@@ -48,11 +48,11 @@ export default async function page() {
           <button className=" h-[56px] top-5 left-[57px] p-4 rounded-full bg-[#6100FF] cursor-pointer flex items-center justify-center gap-2.5">
             <span className=" h-[29px] font-inter text-[24px] font-light leading-[29px] tracking-[-0.01em] text-white">
               {hasToken ? (
-                <Link href="http://localhost:3000/storage">
+                <Link href="/storage">
                   파일 분석하러가기
                 </Link>
               ) : (
-                <Link href="http://localhost:3000/ui_login">Login</Link>
+                <Link href="/ui_login">Login</Link>
               )}
             </span>
           </button>

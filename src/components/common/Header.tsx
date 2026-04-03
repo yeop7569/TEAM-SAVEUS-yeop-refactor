@@ -20,7 +20,7 @@ export default function Header() {
       "
     >
       <nav className="flex items-center">
-        <Link href="/home" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image
             src={Bug}
             alt="FLAWDETECTOR 로고"

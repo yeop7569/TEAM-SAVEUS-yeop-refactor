@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^1.46.0",
+    "@google/generative-ai": "^0.24.1",
     "@octokit/types": "^13.5.0",
     "@tailwindcss/line-clamp": "^0.4.4",
     "firebase": "^10.13.1",

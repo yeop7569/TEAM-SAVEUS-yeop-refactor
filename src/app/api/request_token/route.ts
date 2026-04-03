@@ -1,10 +1,17 @@
 import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
-  const receiveBody = await request.json();
+  const { code } = await request.json(); // 클라이언트에서는 code만 보냄
+
+  const targetBody = {
+    client_id: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+    client_secret: process.env.GITHUB_CLIENT_SECRET || process.env.NEXT_PUBLIC_Client_secrets,
+    code: code,
+  };
+
   const token = await fetch(`https://github.com/login/oauth/access_token`, {
     method: "POST",
-    body: JSON.stringify(receiveBody),
+    body: JSON.stringify(targetBody),
     headers: {
       "Content-Type": "application/json",
       accept: "application/json",

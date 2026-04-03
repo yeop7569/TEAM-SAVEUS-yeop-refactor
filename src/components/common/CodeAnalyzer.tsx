@@ -1,4 +1,4 @@
-"use client"; // 이 라인을 추가
+"use client";
 import React, { useState } from "react";
 import useAnalysisStore, { useModalState } from "@/app/store/analysisStore";
 import AlertUILoding from "./AlertUILoding";
@@ -6,19 +6,23 @@ import ResultUI from "./ResultUI";
 import { getFile } from "@/fileDownload";
 import { useRouter } from "next/navigation";
 import FileListModal from "../modal/FileListModal";
-// interface CodeAnalyzerProps {
-//   code: string;
-//   className?: string;
-// }
-const CodeAnalyzer: React.FC = () => {
+import { postAnalizedFile } from "@/firebase/data_adding";
+
+interface CodeAnalyzerProps {
+  code?: string;
+  isReanalysis?: boolean;
+  path?: string;
+  filename?: string;
+}
+
+const CodeAnalyzer: React.FC<CodeAnalyzerProps> = ({ code, isReanalysis, path, filename }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { username, reponame, filelist, setIsAnalyzing, clearAnalysisResult } = useAnalysisStore();
   const setAnalysisResult = useAnalysisStore(
     (state) => state.setAnalysisResult
   );
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const setPostResult = useAnalysisStore((state) => state.postResultFile);
-
-  const fileList = useAnalysisStore((state) => state.filelist);
 
   const router = useRouter();
 
@@ -36,25 +40,23 @@ const CodeAnalyzer: React.FC = () => {
       download_url: string;
     }[]
   ) => {
-    // console.log(fileList);
     setIsLoading(true);
+    setIsAnalyzing(true);
+    clearAnalysisResult();
     await Promise.all(
       fileList.map(async (file) => {
-        const code = await getFile(file.download_url);
-        if (code) await analyzeCode(code);
-        else {
-          console.error("코드를 다운로드 받는 중 누락이 되었습니다!!");
-          throw new Error("코드를 다운로드 받는 중 누락이 되었습니다!!");
-        }
+        const codeValue = await getFile(file.download_url);
+        if (codeValue) await analyzeCode(codeValue, file.path, file.name);
       })
     );
     setPostResult();
     setIsLoading(false);
+    setIsAnalyzing(false);
     setIsComplete(true);
-    router.refresh();
+    // router.refresh(); // 파이어베이스 연동을 건너뛰기 위해 새로고침 비활성화
   };
 
-  const analyzeCode = async (code: string) => {
+  const analyzeCode = async (codeValue: string, filePath?: string, fileName?: string) => {
     setIsComplete(false);
     try {
       const response = await fetch("/api/analyzeCode", {
@@ -62,41 +64,73 @@ const CodeAnalyzer: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code: codeValue }),
       });
 
+      let responseData;
+      try {
+          // 응답을 단 한 번만 파생(consume)하여 'Body consumed' 오류를 원천 차단
+          responseData = await response.json();
+      } catch (jsonError) {
+          console.error("Failed to parse API response as JSON:", jsonError);
+          throw new Error(`Server returned invalid response: ${response.status}`);
+      }
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorMessage = responseData.message || responseData.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      setAnalysisResult(data.result || "No vulnerabilities found.");
+      const result = responseData.result || "No vulnerabilities found.";
+      
+      setAnalysisResult(result);
+
+      // (임시 비활성화) 개별 파일 분석 결과 저장 (Firebase)
+      /*
+      const targetPath = filePath || path || "_";
+      const targetName = fileName || filename;
+      
+      if (username && reponame && targetName) {
+        await postAnalizedFile(username, reponame, targetPath, targetName, result);
+      }
+      */
     } catch (error) {
       console.error("Failed to analyze code:", error);
       setAnalysisResult("Failed to analyze the code. Please try again.");
-    } finally {
     }
   };
 
   if (getInspection) {
     setInspection(false);
-    analyzefileList(fileList);
+    analyzefileList(filelist);
   }
+
   return (
     <>
       {getModal && (
         <div className="absolute top-0 left-0">
-          <FileListModal filelist={fileList} />
+          <FileListModal filelist={filelist} />
         </div>
       )}
       <div className="flex justify-center items-center ml-[10px] mt-[20px] w-[246px] h-[56px] rounded-lg p-4 py-5 gap-[10px] bg-[#6100FF]">
         <button
-          className="w-[100px] h-[30px] font-inter font-semibold text-[24px] tracking-[-0.01em] text-[white]"
-          onClick={() => {
-            setModal(true);
+          className="w-[120px] h-[30px] font-inter font-semibold text-[24px] tracking-[-0.01em] text-[white]"
+          onClick={async () => {
+            if (code) {
+              setIsLoading(true);
+              setIsAnalyzing(true);
+              clearAnalysisResult();
+              await analyzeCode(code);
+              setIsLoading(false);
+              setIsAnalyzing(false);
+              setIsComplete(true);
+              // router.refresh(); // 파이어베이스 연동 대신 클라이언트 결과 유지
+            } else {
+              setModal(true);
+            }
           }}
         >
-          검사하기
+          {isReanalysis ? "재검사하기" : "검사하기"}
         </button>
 
         {isLoading && (

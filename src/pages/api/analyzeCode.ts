@@ -1,47 +1,54 @@
-// pages/api/analyzeCode.ts
 import { NextApiRequest, NextApiResponse } from "next";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  const { code } = req.body;
+  const apiKey = process.env.GEMINI_API_KEY;
 
-  const { code } = req.body as { code: string };
-  const prompt = `
-다음 코드의 취약점을 분석하고, 해당 취약점에 대해 자세히 설명해주세요. 그리고 취약점을 해결할 수 있는 수정된 코드를 한국어로 제공해주세요.
-취약점이 없다면 취약점이 없습니다.
+  if (!apiKey) {
+    return res.status(500).json({ error: "GEMINI_API_KEY is missing from environment" });
+  }
 
-코드:
-${code}
-
-분석할 내용은 다음과 같습니다:
-1. 코드에 존재하는 주요 취약점은 무엇인지 설명하고,
-2. 해당 취약점을 어떻게 수정할 수 있을지 구체적인 방안을 제시하고,
-3. 수정된 코드 예시를 포함해주세요.
-
-`;
+  console.log("Analyzing Code Sample (Auto Detection):", code ? code.substring(0, 50) + "..." : "EMPTY");
 
   try {
-    // 채팅 엔드포인트를 사용하여 요청
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      max_tokens: 800, // 필요에 따라 토큰 수 조정
-      temperature: 0.7,
+    const ai = new GoogleGenAI({ apiKey });
+    const model = "gemini-2.5-flash";
+
+    const prompt = `You are a strict Security Auditor. 
+Analyze the code for critical vulnerabilities (OWASP, CWE).
+Respond in KOREAN. 
+Sections:
+1. 주요 취약점:
+2. 수정 제안:
+3. 수정된 코드:
+
+Analyze this:
+\n\n${code}`;
+
+    const result = await ai.models.generateContent({ model, contents: prompt });
+    const responseText = result.text;
+
+    if (!responseText) {
+        throw new Error("AI returned empty response");
+    }
+
+    res.status(200).json({ result: responseText });
+  } catch (error: any) {
+    console.error("Gemini Analysis Failed Details:", error.message || error);
+    
+    // 에러 메시지에 모델명을 포함하여 구체적인 원인을 알려줍니다.
+    res.status(500).json({
+      error: "Gemini Analysis Failed",
+      message: error.message,
+      tip: "Please check if your API key has 'Generative Language API' enabled in Google AI Studio."
     });
-    res.status(200).json({ result: completion.choices[0].message.content });
-  } catch (error) {
-    console.error("Error analyzing code:", error);
-    res.status(500).json({ error: "Failed to analyze the code" });
   }
 }
